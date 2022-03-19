@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FormController;
+use App\Http\Controllers\ArticleController;
+use App\Models\Category;
+use App\Models\User;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,3 +23,35 @@ Route::get('/', function () {
 
 Route::get('/input', [FormController::class, 'input']);
 Route::post('/proses', [FormController::class, 'proses']);
+
+Route::get('/dashboard',function(){
+    return redirect('/');
+});
+
+Route::get('/article', [ArticleController::class, 'index']);
+Route::get('/article/{article:slug}', [ArticleController::class, 'content']);
+
+Route::get('/categories', function() {
+    return view('categories', [
+        'title' => 'Post Categories',
+        'categories' => Category::all()
+    ]);
+});
+
+Route::get('/categories/{category:slug}', function(Category $category) {
+    return view('article', [
+        "name" => "Muhammad Naufaldillah",
+        "email" => "mnaufaldillah@gmail.com",
+        'title' => "Halaman Kategori : $category->name",
+        'articles' => $category->articles->load('category', 'author'),
+    ]);
+});
+
+Route::get('/authors/{author:username}', function(User $author) {
+    return view('article', [
+        "name" => "Muhammad Naufaldillah",
+        "email" => "mnaufaldillah@gmail.com",
+        'title' => "Halaman Author : $author->name",
+        'articles' => $author->articles->load('category', 'author'),
+    ]);
+});
